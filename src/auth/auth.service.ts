@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { CreatedResponse } from './interfaces/created-response.interface';
 import { InjectModel } from '@nestjs/mongoose/dist/common/mongoose.decorators';
 import { JwtPayload } from './interfaces/jwt-payload.';
 import { JwtService } from '@nestjs/jwt';
@@ -53,8 +52,6 @@ export class AuthService {
 
     const user = await this.create(createUserDto)
 
-    const { email } = user
-
     return {
       user: user,
       token: this.getJwtToken({ id: user.id })
@@ -76,7 +73,7 @@ export class AuthService {
 
     return {
       user: currentUser,
-      token: this.getJwtToken({ id: user.id })
+      token: this.getJwtToken({ id: user._id.toString() })
     }
 
   }
@@ -85,8 +82,8 @@ export class AuthService {
     return this.userModel.find();
   }
 
-  async findUserById( id: string ) {
-    const user = await this.userModel.findById( id );
+  async findUserById(id: string) {
+    const user = await this.userModel.findById(id);
     const { password, ...rest } = user.toJSON();
     return rest;
   }
